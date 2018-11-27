@@ -28,6 +28,35 @@ public:
     typedef typename std::vector<T>::size_type l_size_type;
     typedef typename std::vector<std::vector<T> >::size_type l_v_size_type;
     lMat():_pd(nullptr){}
+
+    lMat(std::initializer_list<std::initializer_list<T>> _d)
+    {
+//        std::copy(_d.begin(),_d.end(),_pd);
+//        LogInfo<<*_d.begin()->begin();
+        auto it =_d.begin();
+
+//        std::initializer_list *it=_d.begin();=
+        for(;it!=_d.end();it++)
+        {
+            std::vector<T> _b=*it;
+//            std::copy(it->begin(),it->end(),&_b);
+            _pd->push_back(_b);
+            auto it_d=it->begin();
+            for(;it_d!=it->end();it_d++)
+            {
+                LogInfo<<*it_d;
+            }
+        }
+
+
+        LogInfo<<"type name "<<typeid(T).name();
+    }
+
+    template<int M,int N> lmat(int const(&)[M][N],T d)
+    {
+        LogInfo<<"type name int M,int N"<<typeid(T).name();
+    }
+
     lMat(lUint r,lUint c,T d)
     {
         std::vector<T> _b(c,d);
