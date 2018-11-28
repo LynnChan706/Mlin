@@ -31,58 +31,53 @@ public:
 
     lMat(std::initializer_list<std::initializer_list<T>> _d)
     {
-//        std::copy(_d.begin(),_d.end(),_pd);
-//        LogInfo<<*_d.begin()->begin();
         auto it =_d.begin();
-
-//        std::initializer_list *it=_d.begin();=
+        std::vector<std::vector<T>> _fv;
         for(;it!=_d.end();it++)
         {
-            std::vector<T> _b=*it;
-//            std::copy(it->begin(),it->end(),&_b);
-            _pd->push_back(_b);
-            auto it_d=it->begin();
-            for(;it_d!=it->end();it_d++)
-            {
-                LogInfo<<*it_d;
-            }
+            std::vector<T> _v=*it;
+            _fv.push_back(_v);
         }
-
-
-        LogInfo<<"type name "<<typeid(T).name();
+        _pd=std::make_shared<std::vector<std::vector<T>>>(_fv);
     }
-
-    template<int M,int N> lmat(int const(&)[M][N],T d)
-    {
-        LogInfo<<"type name int M,int N"<<typeid(T).name();
-    }
-
     lMat(lUint r,lUint c,T d)
     {
         std::vector<T> _b(c,d);
         LogInfo<<"type name "<<typeid(T).name();
-        _pd=std::make_shared<std::vector<std::vector<T> > >(r,_b);
+        _pd=std::make_shared<std::vector<std::vector<T>>>(r,_b);
     }
     l_v_size_type size() const{ return _pd==nullptr?0:_pd->size();}
     m_size size_m() const{return m_size(_pd->size(),_pd->at(0).size());}
 
     std::vector<T> & operator[](l_v_size_type idx) {return _pd->at(idx);}
+//    template<typename _T>  lMat<double> operator*(lMat<_T> & _m)
+//    {
+//        lMat<double> _mat(size_m()._c,size_m()._r,0);
+//        for(int i=0;i<size_m()._c;i++)
+//        {
+//            for(int j=0;j<size_m()._r;j++)
+//            {
+//                _mat[i][j]=_pd->at(i)[j]*_m[i][j];
+//            }
+//        }
+//        return _mat;
+//    }
+
     template<typename _T>  lMat<double> operator*(lMat<_T> & _m)
     {
-        lMat<double> _mat(size_m()._c,size_m()._r,0);
-        for(int i=0;i<size_m()._c;i++)
+        if(size_m()._c!=_m.size_m()._r)
         {
-            for(int j=0;j<size_m()._r;j++)
-            {
-                _mat[i][j]=_pd->at(i)[j]*_m[i][j];
-            }
+            throw "mat multiple error";
         }
+        lMat<double> _mat(size_m()._r,_m.size_m()._c,0);
+        for(int i=0; i!=_mat.size_m()._r; ++i)
+             for(int j=0; j!=_mat.size_m()._c; ++j)
+                 for(int k=0; k!=size_m()._c; ++k)
+                     _mat[i][j]+=_pd->at(i)[k]*_m[k][j];
         return _mat;
     }
-
 private:
-    std::shared_ptr<std::vector<std::vector<T> > > _pd;
-
+    std::shared_ptr<std::vector<std::vector<T>>> _pd;
 };
 
 }
